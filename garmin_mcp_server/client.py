@@ -87,9 +87,11 @@ class GarminClient:
     # -- invocation --------------------------------------------------------
 
     # Exceptions that indicate an expired/invalid session and are worth one
-    # re-authentication attempt. Matched by class name rather than identity
-    # because the underlying libraries (notably the deprecated ``garth``) can
-    # re-bind these names depending on import order.
+    # re-authentication attempt. garminconnect (>=0.3) raises
+    # ``GarminConnectAuthenticationError`` on a 401; the ``Garth*`` names are
+    # retained defensively for older installs that still surfaced the (now
+    # deprecated) garth transport errors. Matched by class name rather than
+    # identity so import order can't break the comparison.
     _AUTH_ERROR_NAMES = frozenset(
         {"GarminConnectAuthenticationError", "GarthHTTPError", "GarthException"}
     )

@@ -6,11 +6,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "garmin-mcp-server"
-version = "0.2.0"
+version = "0.3.0"
 description = "A comprehensive Model Context Protocol (MCP) server for Garmin Connect — bring your health, fitness and activity data to any LLM."
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 authors = [{ name = "Andrey Chubarov" }]
 keywords = [
     "mcp",
@@ -27,15 +27,13 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "mcp>=1.2.0",
-    "garminconnect>=0.2.25",
-    "garth>=0.4.45",
+    "mcp>=1.9.0",
+    "garminconnect>=0.3.6",
     "python-dotenv>=1.0.0",
 ]
 
@@ -59,7 +57,7 @@ packages = ["garmin_mcp_server"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

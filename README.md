@@ -12,7 +12,7 @@ Built for **[cyclosport.app](http://cyclosport.app)**.
 
 [![CI](https://github.com/stitrace/garmin-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/stitrace/garmin-mcp-server/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/garmin-mcp-server.svg)](https://pypi.org/project/garmin-mcp-server/)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-6E40C9.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built on garminconnect](https://img.shields.io/badge/built%20on-garminconnect-0a7cff.svg)](https://github.com/cyberjunky/python-garminconnect)
@@ -390,9 +390,10 @@ gate publishes. After that, every `v*` tag lands on PyPI and
 ## 🙏 Acknowledgements
 
 - Built for **[cyclosport.app](http://cyclosport.app)**.
-- [`python-garminconnect`](https://github.com/cyberjunky/python-garminconnect)
-  and [`garth`](https://github.com/matin/garth) — the excellent libraries this
-  server builds on.
+- [`python-garminconnect`](https://github.com/cyberjunky/python-garminconnect) —
+  the excellent library this server builds on (it now talks to Garmin directly;
+  the formerly-used [`garth`](https://github.com/matin/garth) is no longer a
+  dependency).
 - [Model Context Protocol](https://modelcontextprotocol.io) by Anthropic.
 
 ## 📄 License

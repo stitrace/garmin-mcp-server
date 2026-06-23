@@ -474,7 +474,7 @@ def connect_api(path: str) -> Any:
 # Auto-exposed tools
 # ---------------------------------------------------------------------------
 # Every remaining public method of garminconnect is registered as a tool so the
-# full API surface (0.3.2+) is available. The hand-written tools above provide
+# full API surface (0.3.6+) is available. The hand-written tools above provide
 # friendly date handling and trimming for the most common queries; everything
 # else is exposed here with the library's native signature. This list stays in
 # sync with garminconnect automatically — new methods become tools on upgrade.
@@ -565,6 +565,8 @@ _DESCRIPTIONS = {
     "add_hydration_data": "WRITES: log hydration intake.",
     "add_weigh_in_with_timestamps": "WRITES: add a weigh-in with explicit timestamps.",
     "set_activity_type": "WRITES: change an activity's sport type.",
+    "set_activity_description": "WRITES: set/update an activity's description.",
+    "set_activity_exercise_sets": "WRITES: set strength-training exercise sets for an activity.",
     "set_blood_pressure": "WRITES: record a blood-pressure reading.",
     "set_gear_default": "WRITES: set the default gear for an activity type.",
     "add_gear_to_activity": "WRITES: attach gear to an activity.",
