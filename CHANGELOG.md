@@ -5,6 +5,18 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-06-27
+
+### Changed
+- Dependency-maintenance refresh of the lockfile. Runtime `mcp` moves
+  1.27.2 → 1.28.1, along with transitive runtime libraries (`cryptography`,
+  `starlette`, `uvicorn`, `anyio`, `certifi`, and others) and the dev
+  toolchain (`pytest` 9.1.1, `ruff` 0.15.20). No change to the public API or
+  the set of exposed tools — `garminconnect` stays at 0.3.6. Declared
+  dependency floors in `pyproject.toml` are unchanged.
+
+[0.3.1]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.1
+
 ## [0.3.0] - 2026-06-23
 
 ### Changed
