@@ -66,9 +66,12 @@ jobs:
           PREV="$(git describe --tags --abbrev=0 "${CURRENT}^" 2>/dev/null || true)"
           # Only user-facing commits (feat/fix) go in the notes; strip the
           # conventional-commit prefix. CI/chore/docs/etc. are omitted.
+          # `grep` exits 1 when a release contains no feat/fix commits (e.g. a
+          # deps-only maintenance release). Tolerate that under `pipefail` so
+          # the step still produces notes instead of aborting.
           changelog() {
             git log --pretty=format:'%s (%h)' "$@" \
-              | grep -E '^(feat|fix)(\([^)]*\))?!?: ' \
+              | { grep -E '^(feat|fix)(\([^)]*\))?!?: ' || true; } \
               | sed -E 's/^(feat|fix)(\([^)]*\))?!?: /- /'
           }
           {
