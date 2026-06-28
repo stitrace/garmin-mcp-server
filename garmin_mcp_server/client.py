@@ -17,11 +17,12 @@ from __future__ import annotations
 import logging
 import threading
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from garminconnect import Garmin, GarminConnectAuthenticationError
 
-from .config import GarminConfig
+from .config import GarminConfig, _dir_has_tokens, _looks_like_token_blob
 
 logger = logging.getLogger("garmin_mcp_server.client")
 
@@ -58,18 +59,31 @@ class GarminClient:
             logger.info("Authenticated with Garmin Connect (tokenstore=%s)", cfg.tokenstore)
             return client
         except GarminConnectAuthenticationError as exc:
+            where = self._tokenstore_hint()
             if not cfg.has_credentials:
                 raise GarminAuthError(
                     "No valid Garmin tokens found and no GARMIN_EMAIL/GARMIN_PASSWORD set.\n"
+                    f"{where}\n"
                     "Run `garmin-mcp-server-login` once to create cached tokens (this also "
                     "handles multi-factor authentication)."
                 ) from exc
             raise GarminAuthError(
-                f"Garmin authentication failed: {exc}. If your account uses MFA, "
+                f"Garmin authentication failed: {exc}. {where} If your account uses MFA, "
                 f"run `garmin-mcp-server-login` to authenticate interactively."
             ) from exc
         except Exception as exc:  # pragma: no cover - network/edge errors
             raise GarminAuthError(f"Unexpected error during Garmin login: {exc}") from exc
+
+    def _tokenstore_hint(self) -> str:
+        """Human-readable note about where tokens were looked for, for errors."""
+        store = self._config.tokenstore
+        if _looks_like_token_blob(store):
+            return "Token store: provided as an inline token blob."
+        if not Path(store).exists():
+            return f"Token store '{store}' does not exist (check GARMINTOKENS)."
+        if not _dir_has_tokens(store):
+            return f"Token store '{store}' has no cached token files (check GARMINTOKENS)."
+        return f"Token store: '{store}'."
 
     @property
     def raw(self) -> Garmin:

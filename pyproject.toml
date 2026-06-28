@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "garmin-mcp-server"
-version = "0.3.1"
+version = "0.3.2"
 description = "A comprehensive Model Context Protocol (MCP) server for Garmin Connect — bring your health, fitness and activity data to any LLM."
 readme = "README.md"
 license = { text = "MIT" }

@@ -5,6 +5,21 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-06-28
+
+### Fixed
+- Resilient token-store resolution. A stale or misconfigured `GARMINTOKENS`
+  pointing at a directory with no cached tokens used to fall straight through
+  to a credential/MFA login that fails in the headless server context (the
+  confusing *"MFA Required but no prompt_mfa mechanism supplied"* error). When
+  the configured path has no tokens but the default store (`~/.garminconnect`)
+  does, the server now falls back to it and logs a warning instead of failing.
+- Clearer authentication errors: the resolved token-store path and whether it
+  exists / contains token files are now included in the error message, so a
+  bad `GARMINTOKENS` is obvious immediately.
+
+[0.3.2]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.2
+
 ## [0.3.1] - 2026-06-27
 
 ### Changed
