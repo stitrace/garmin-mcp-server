@@ -4,6 +4,6 @@ A Model Context Protocol server that exposes Garmin Connect health, fitness and
 activity data as LLM-friendly tools.
 """
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 __all__ = ["__version__"]

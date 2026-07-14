@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-07-14
+
+### Changed
+- Dependency-maintenance refresh of the lockfile. Transitive runtime libraries
+  move forward (`anyio` 4.14.2, `cffi` 2.1.0, `charset-normalizer` 3.4.9,
+  `rpds-py` 2026.6.3, `typing-extensions` 4.16.0, `uvicorn` 0.51.0) along with
+  the dev toolchain (`ruff` 0.15.21). No change to the public API or the set
+  of exposed tools — `mcp` stays at 1.28.1 and `garminconnect` at 0.3.6, both
+  already the latest releases. Declared dependency floors in `pyproject.toml`
+  are unchanged.
+
+[0.3.3]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.3
+
 ## [0.3.2] - 2026-06-28
 
 ### Fixed
