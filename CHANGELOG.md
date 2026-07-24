@@ -5,6 +5,28 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2026-07-24
+
+### Fixed
+- Auto-registered tools with JSON-object parameters (`set_activity_exercise_sets`,
+  `create_manual_activity_from_json`, `query_garmin_graphql`, `upload_workout`)
+  were unusable: the MCP layer exposes such parameters as strings, and the
+  wrapper passed the JSON text straight to `garminconnect`, which re-encoded
+  it — Garmin rejected the double-encoded body with a 500
+  `MismatchedInputException`. The generic wrapper now decodes string arguments
+  for parameters whose underlying method expects a `dict`/`list`. Invalid JSON
+  raises a clear `ValueError` up front, except for parameters that also accept
+  plain strings (e.g. `upload_workout`), where the value passes through
+  unchanged.
+
+### Changed
+- Lockfile refresh: `annotated-types` 0.8.0, `certifi` 2026.7.22,
+  `sse-starlette` 3.4.6, dev `ruff` 0.16.0. Runtime floors unchanged —
+  `mcp` 1.28.1, `garminconnect` 0.3.6 and `python-dotenv` 1.2.2 are already
+  the latest releases.
+
+[0.3.4]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.4
+
 ## [0.3.3] - 2026-07-14
 
 ### Changed
