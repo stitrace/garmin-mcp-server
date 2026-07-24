@@ -50,3 +50,44 @@ def test_call_wraps_errors(fake_client):
     with pytest.raises(RuntimeError) as exc:
         server.get_daily_summary(date="2024-01-01")
     assert "get_stats" in str(exc.value)
+
+
+def test_generic_tool_decodes_json_payload(fake_client):
+    fake_client.call.return_value = {}
+    tool = server._make_generic_tool("set_activity_exercise_sets")
+    tool(activity_id="123", payload='{"exerciseSets": [{"setType": "ACTIVE"}]}')
+    fake_client.call.assert_called_once_with(
+        "set_activity_exercise_sets", "123", {"exerciseSets": [{"setType": "ACTIVE"}]}
+    )
+
+
+def test_generic_tool_rejects_invalid_json_for_dict_param(fake_client):
+    tool = server._make_generic_tool("set_activity_exercise_sets")
+    with pytest.raises(ValueError) as exc:
+        tool(activity_id="123", payload="not json")
+    assert "payload" in str(exc.value)
+    fake_client.call.assert_not_called()
+
+
+def test_generic_tool_passes_plain_string_when_method_allows_str(fake_client):
+    fake_client.call.return_value = {}
+    # upload_workout accepts dict | list | str: undecodable input passes through.
+    tool = server._make_generic_tool("upload_workout")
+    tool(workout_json="not json")
+    fake_client.call.assert_called_once_with("upload_workout", "not json")
+
+
+def test_generic_tool_decodes_json_when_method_also_allows_str(fake_client):
+    fake_client.call.return_value = {}
+    tool = server._make_generic_tool("upload_workout")
+    tool(workout_json='{"workoutName": "x"}')
+    fake_client.call.assert_called_once_with("upload_workout", {"workoutName": "x"})
+
+
+def test_generic_tool_leaves_scalar_params_untouched(fake_client):
+    fake_client.call.return_value = {}
+    tool = server._make_generic_tool("set_activity_name")
+    tool("123", '{"looks": "like json"}')
+    fake_client.call.assert_called_once_with(
+        "set_activity_name", "123", '{"looks": "like json"}'
+    )

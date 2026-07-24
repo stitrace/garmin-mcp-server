@@ -11,6 +11,7 @@ Run with:
 from __future__ import annotations
 
 import inspect
+import json
 import logging
 import os
 from typing import Any
@@ -591,12 +592,22 @@ _DESCRIPTIONS = {
 }
 
 
+_JSON_ANNOTATION_MARKERS = ("dict", "list", "Dict", "List", "Mapping", "Sequence")
+
+
 def _make_generic_tool(method_name: str):
     """Build an MCP tool wrapper mirroring a garminconnect method's signature."""
     raw_method = getattr(Garmin, method_name)
     sig = inspect.signature(raw_method)
 
     params = []
+    # Params whose original annotation expects a dict/list. MCP clients can only
+    # send them as JSON text (the tool schema says `str`), so the wrapper must
+    # decode them back before calling garminconnect — otherwise the library
+    # sends a double-encoded JSON string and Garmin responds with a 500
+    # MismatchedInputException. Maps param name -> whether plain `str` is also
+    # accepted by the method (then undecodable input passes through unchanged).
+    json_params: dict[str, bool] = {}
     for p in sig.parameters.values():
         if p.name == "self":
             continue
@@ -608,11 +619,33 @@ def _make_generic_tool(method_name: str):
             ann = type(p.default)
         else:
             ann = str
+        raw_ann = p.annotation if isinstance(p.annotation, str) else str(p.annotation)
+        if p.annotation is not inspect.Parameter.empty and any(
+            marker in raw_ann for marker in _JSON_ANNOTATION_MARKERS
+        ):
+            union_members = [part.strip() for part in raw_ann.split("|")]
+            json_params[p.name] = "str" in union_members
         params.append(
             p.replace(annotation=ann, kind=inspect.Parameter.POSITIONAL_OR_KEYWORD)
         )
 
+    tool_sig = inspect.Signature(params)
+
     def tool_fn(*args: Any, **kwargs: Any) -> Any:
+        if json_params:
+            bound = tool_sig.bind_partial(*args, **kwargs)
+            for name, allows_str in json_params.items():
+                value = bound.arguments.get(name)
+                if not isinstance(value, str):
+                    continue
+                try:
+                    bound.arguments[name] = json.loads(value)
+                except json.JSONDecodeError as exc:
+                    if not allows_str:
+                        raise ValueError(
+                            f"Parameter '{name}' of '{method_name}' must be valid JSON: {exc}"
+                        ) from exc
+            args, kwargs = bound.args, bound.kwargs
         return trim(_call(method_name, *args, **kwargs))
 
     tool_fn.__name__ = method_name
