@@ -5,6 +5,26 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.5] - 2026-09-11
+
+### Fixed
+- Installs pulled a broken dependency set: the `mcp>=1.9.0` requirement had no
+  upper bound, so a fresh install resolved to `mcp` 2.x, where `FastMCP` was
+  renamed to `MCPServer` and the server API was reshaped. `server.py` targets
+  the v1 API, so the server failed at import with
+  `ModuleNotFoundError: No module named 'mcp.server.fastmcp'`. The requirement
+  is now `mcp>=1.9.0,<2`. Migrating to the v2 API is tracked separately.
+
+### Changed
+- Lockfile refresh: `garminconnect` 0.3.6 -> 0.3.13, `mcp` 1.28.1 -> 1.30.0,
+  `cryptography` 49.0.0 -> 50.0.1, `starlette` 1.3.1 -> 1.6.0, `uvicorn`
+  0.51.0 -> 0.52.4, `curl-cffi` 0.15.0 -> 0.16.3, `anyio` 4.14.2 -> 4.15.1,
+  `python-dotenv` 1.2.2 -> 1.2.3, plus 14 smaller bumps and the removal of the
+  now-unused `rich` / `markdown-it-py` / `mdurl` chain. Dev `ruff`
+  0.16.0 -> 0.16.7. Runtime floors other than `mcp` are unchanged.
+
+[0.3.5]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.5
+
 ## [0.3.4] - 2026-07-24
 
 ### Fixed
