@@ -1,12 +1,12 @@
 [build-system]
-# hatchling 1.28.0 emits Metadata-Version: 2.5, which is not a valid metadata
-# spec version and is rejected by PyPI/twine/packaging. Pin to <1.28 (emits 2.4).
-requires = ["hatchling>=1.27,<1.28"]
+# The <1.28 ceiling is gone: hatchling emits Metadata-Version 2.5, which
+# packaging (>=25) and twine (>=6) now accept, so it is no longer rejected.
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
 name = "garmin-mcp-server"
-version = "0.3.5"
+version = "0.3.6"
 description = "A comprehensive Model Context Protocol (MCP) server for Garmin Connect — bring your health, fitness and activity data to any LLM."
 readme = "README.md"
 license = { text = "MIT" }

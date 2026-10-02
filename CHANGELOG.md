@@ -5,6 +5,30 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6] - 2026-10-03
+
+### Fixed
+- `get_goals` returned an empty list through the MCP tool. The tool mirrors the
+  `garminconnect` signature, and that library defaulted `start=0`, which Garmin
+  answers with no goals at all. `garminconnect` 0.3.17 changed the default to
+  `start=1`, so the tool now returns the goals it always should have. Callers
+  that passed `start=0` explicitly to `get_goals` or to the badge-challenge
+  tools must switch to `start=1` — the library now raises `ValueError` there.
+
+### Changed
+- The `hatchling<1.28` build pin is removed. It existed because hatchling 1.28
+  emits `Metadata-Version: 2.5`, which the tooling of the day rejected;
+  `packaging` 26.x lists 2.5 and 2.6 as valid and `twine` 7.0 accepts the
+  resulting wheel, so the ceiling only held the build back.
+- Lockfile refresh: `garminconnect` 0.3.13 -> 0.3.17, `python-dotenv`
+  1.2.3 -> 1.2.4, `cryptography` 50.0.1 -> 50.0.2, `starlette` 1.6.0 -> 1.7.0,
+  `uvicorn` 0.52.4 -> 0.54.0, `urllib3` 2.7.0 -> 2.8.0, `pyjwt`
+  2.14.0 -> 2.15.1, `sse-starlette` 3.4.11 -> 3.5.0, plus smaller bumps. Dev
+  `ruff` 0.16.7 -> 0.16.10. `mcp` stays on 1.30.0 behind the `<2` ceiling;
+  migrating to the v2 API is still tracked separately.
+
+[0.3.6]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.6
+
 ## [0.3.5] - 2026-09-11
 
 ### Fixed
