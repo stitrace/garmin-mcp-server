@@ -5,6 +5,22 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.7] - 2026-10-04
+
+### Fixed
+- Every numeric parameter of the auto-exposed write tools was advertised to MCP
+  clients as a string, so Garmin rejected the calls. `add_hydration_data` failed
+  with `value_in_ml must be a number`; `set_blood_pressure` and
+  `add_body_composition` were broken the same way. The generated tool signature
+  derived each annotation from the *default value's* type, which silently fell
+  back to `str` whenever a parameter was required (`value_in_ml: float`,
+  `systolic: int`) or defaulted to `None` (`percent_fat: float | None = None`).
+  Annotations are now taken from the declaration itself, with the default-based
+  guess kept only as a fallback. `dict`/`list` parameters still present as `str`
+  on purpose — clients send them as JSON text, which the wrapper decodes.
+
+[0.3.7]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.3.7
+
 ## [0.3.6] - 2026-10-03
 
 ### Fixed

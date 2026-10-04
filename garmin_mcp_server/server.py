@@ -14,6 +14,7 @@ import inspect
 import json
 import logging
 import os
+import re
 from typing import Any
 
 from garminconnect import Garmin
@@ -594,6 +595,54 @@ _DESCRIPTIONS = {
 
 _JSON_ANNOTATION_MARKERS = ("dict", "list", "Dict", "List", "Mapping", "Sequence")
 
+# Scalar annotations we can safely hand to pydantic, keyed by the textual form of
+# the declared annotation with any `| None` stripped. Deriving the type from the
+# declaration (rather than from the default value) is what keeps numeric params
+# numeric: `value_in_ml: float` and `systolic: int` have no default at all, and
+# `percent_fat: float | None = None` defaults to None, so a default-based guess
+# typed every one of them as `str` and Garmin rejected the call.
+_SCALAR_ANNOTATIONS: dict[str, type] = {
+    "float": float,
+    "int": int,
+    "bool": bool,
+    "str": str,
+    "int | float": float,
+    "float | int": float,
+}
+
+
+def _scalar_annotation(annotation: Any) -> type | None:
+    """Map a declared annotation to a scalar type, or None if unsupported.
+
+    Optional scalars resolve to the underlying scalar: MCP already treats a
+    param with a default as optional, so `float | None` is just `float` here.
+
+    The annotation arrives in three shapes depending on how the method was
+    declared, and all three have to be handled: a real class (`float`), a union
+    object that renders as text (`float | None`), or a string when the defining
+    module uses `from __future__ import annotations`. A `float` class stringifies
+    to "<class 'float'>", so the textual path normalises that form too.
+    """
+    if isinstance(annotation, type):
+        return annotation if annotation in (float, int, bool, str) else None
+    raw_ann = annotation if isinstance(annotation, str) else str(annotation)
+    members = []
+    for part in raw_ann.split("|"):
+        part = part.strip()
+        match = re.fullmatch(r"<class '([\w.]+)'>", part)
+        if match:
+            part = match.group(1).rsplit(".", 1)[-1]
+        if part not in ("None", "NoneType"):
+            members.append(part)
+    if not members:
+        return None
+    key = " | ".join(members)
+    if key in _SCALAR_ANNOTATIONS:
+        return _SCALAR_ANNOTATIONS[key]
+    if len(members) == 1:
+        return _SCALAR_ANNOTATIONS.get(members[0])
+    return None
+
 
 def _make_generic_tool(method_name: str):
     """Build an MCP tool wrapper mirroring a garminconnect method's signature."""
@@ -613,16 +662,26 @@ def _make_generic_tool(method_name: str):
             continue
         if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
             continue
-        # Pick a safe, pydantic-friendly annotation from the default's type;
-        # this avoids forward-reference / typing-generic resolution issues.
-        if p.default is not inspect.Parameter.empty and isinstance(p.default, (int, float, bool)):
-            ann = type(p.default)
-        else:
-            ann = str
         raw_ann = p.annotation if isinstance(p.annotation, str) else str(p.annotation)
-        if p.annotation is not inspect.Parameter.empty and any(
+        is_json_ann = p.annotation is not inspect.Parameter.empty and any(
             marker in raw_ann for marker in _JSON_ANNOTATION_MARKERS
-        ):
+        )
+        # Pick a safe, pydantic-friendly annotation. Prefer the declared scalar
+        # type so numbers stay numbers; fall back to the default's type, then to
+        # `str`. dict/list params stay `str` on purpose — MCP clients can only
+        # send them as JSON text, which `tool_fn` decodes below. Resolving the
+        # annotation textually avoids forward-reference / typing-generic issues.
+        ann = None
+        if not is_json_ann and p.annotation is not inspect.Parameter.empty:
+            ann = _scalar_annotation(p.annotation)
+        if ann is None:
+            if p.default is not inspect.Parameter.empty and isinstance(
+                p.default, (int, float, bool)
+            ):
+                ann = type(p.default)
+            else:
+                ann = str
+        if is_json_ann:
             union_members = [part.strip() for part in raw_ann.split("|")]
             json_params[p.name] = "str" in union_members
         params.append(
