@@ -18,7 +18,7 @@ import re
 from typing import Any
 
 from garminconnect import Garmin
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from .client import GarminAuthError, GarminClient
 from .helpers import resolve_date, resolve_range, trim
@@ -29,7 +29,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("garmin_mcp_server.server")
 
-mcp = FastMCP("garmin-connect")
+mcp = MCPServer("garmin-connect")
 
 # A single shared, lazily-authenticated client for the whole process.
 _client: GarminClient | None = None

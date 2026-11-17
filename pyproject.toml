@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "garmin-mcp-server"
-version = "0.3.7"
+version = "0.4.0"
 description = "A comprehensive Model Context Protocol (MCP) server for Garmin Connect — bring your health, fitness and activity data to any LLM."
 readme = "README.md"
 license = { text = "MIT" }
@@ -32,9 +32,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    # mcp 2.x renamed FastMCP -> MCPServer and reshaped the server API;
-    # server.py targets the v1 API. Keep the ceiling until that migration lands.
-    "mcp>=1.9.0,<2",
+    "mcp>=2,<3",
     "garminconnect>=0.3.6",
     "python-dotenv>=1.0.0",
 ]

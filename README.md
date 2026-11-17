@@ -5,7 +5,7 @@
 **Bring your Garmin health, fitness, and activity data to any LLM.**
 
 A [Model Context Protocol](https://modelcontextprotocol.io) server that turns your
-Garmin Connect account into 40+ ready-to-use tools for Claude, Cursor, and any
+Garmin Connect account into 100+ ready-to-use tools for Claude, Cursor, and any
 other MCP-compatible client.
 
 Built for **[cyclosport.app](http://cyclosport.app)**.

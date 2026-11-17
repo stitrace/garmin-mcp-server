@@ -5,6 +5,16 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-11-17
+
+### Changed
+- **Migrated to MCP Python SDK v2.** `FastMCP` is now `MCPServer`
+  (`mcp.server.mcpserver`). The dependency floor moves from `mcp>=1.9.0,<2` to
+  `mcp>=2,<3`. No changes to the tool API or behavior — all 100+ tools work
+  exactly as before.
+
+[0.4.0]: https://github.com/stitrace/garmin-mcp-server/releases/tag/v0.4.0
+
 ## [0.3.7] - 2026-10-04
 
 ### Fixed
